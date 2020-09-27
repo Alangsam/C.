@@ -9,6 +9,21 @@
         <script src="index.js"></script>
     </head>
     <body>
+        <div class="container">
+            <div class="row ">
+                <h1 class="col-12">Record A New Note</h1>
+                <form id="note-form" class="col-8 offset-2 text-center">
+                    <label>Title: </label>
+                    <input id="note-title" class="form-control"/>
+
+                    <label class="mt-5">New Note: </label>
+                    <textarea class="form-control" style="height: 70vh;"></textarea>
+                    <button class="btn btn-dark float-right mt-3" onclick="sendNewNote()">Save</button>
+                </form>
+            </div>
+        </div>
+
+
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>

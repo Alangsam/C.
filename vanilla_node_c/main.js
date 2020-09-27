@@ -1,9 +1,9 @@
 const http = require("http");
 const hostname = "127.0.0.1";
 const port = 3000;
-
 const sql = require("mysql");
 const testing = require("./queries/testing");
+const { v4: uuidv4 } = require("uuid");
 require("dotenv").config();
 
 const dataBase = sql.createConnection({
@@ -23,35 +23,17 @@ dataBase.connect(function (err) {
   console.log("Connected to database.");
 });
 
-// dataBase.query(testing, function (error, results, fields) {
-//   if (error) throw error;
-//   console.log(results);
-// });
-
-dataBase.end();
-
-// const server = http.createServer((req, res) => {
-//   //console.log(req.url);
-
-//   //res.statusCode = 200;
-//   // res.setHeader("Content-Type", "text/plain");
-//   // res.end("Hello, World!\n");
-
-//   let body = [];
-//   req
-//     .on("data", (chunk) => {
-//       body.push(chunk);
-//     })
-//     .on("end", () => {
-//       body = Buffer.concat(body).toString();
-//       // at this point, `body` has the entire request body stored in it as a string
-//     });
-//   console.log(req);
-// });
+//dataBase.end();
 
 const qs = require("querystring");
 const { regForForm } = require("./utils/regex");
-
+const {
+  createEmailValidity,
+} = require("./utils/validation/createEmailValidity");
+const {
+  createPasswordValidation,
+} = require("./utils/validation/createPasswordValidation");
+const createUserQuery = require("./queries/createUser");
 const server = http.createServer((request, response) => {
   if (request.method == "POST") {
     let body = "";
@@ -64,16 +46,49 @@ const server = http.createServer((request, response) => {
       if (body.length > 1e6) request.connection.destroy();
     });
 
-    request.on("end", function () {
-      const post = qs.parse(body);
-      const userObj = regForForm(JSON.stringify(post));
-      console.log(userObj);
-    });
+    if (request.url === "/") {
+      request.on("end", function () {
+        const post = qs.parse(body);
+        const userObj = regForForm(JSON.stringify(post));
+        console.log(userObj);
+        const emailValidity = createEmailValidity(String(userObj.email));
+        const passWordValidity = createPasswordValidation(
+          String(userObj.password)
+        );
+        const newUser = {
+          id: uuidv4(),
+          email: userObj.email,
+          password: userObj.password,
+          created_at: Date.now(),
+        };
 
-    response.setHeader("Content-Type", "application.json");
-    response.setHeader("Access-Control-Allow-Origin", "*");
-    response.statusCode = 200;
-    response.end("Hello");
+        if (emailValidity === "" && passWordValidity === "") {
+          response.setHeader("Content-Type", "application.json");
+          response.setHeader("Access-Control-Allow-Origin", "*");
+          response.statusCode = 200;
+          response.end("Success");
+          dataBase.query(createUserQuery, newUser, function (
+            error,
+            results,
+            fields
+          ) {
+            if (error) throw error;
+            console.log(results);
+          });
+        } else {
+          response.setHeader("Content-Type", "application.json");
+          response.setHeader("Access-Control-Allow-Origin", "*");
+          response.statusCode = 400;
+          response.statusMessage = JSON.stringify({
+            emailError: emailValidity,
+            passError: passWordValidity,
+          });
+          response.end("Failed");
+        }
+      });
+    } else if (request.url === "/new-note") {
+      request.on("end", function () {});
+    }
   }
 });
 
