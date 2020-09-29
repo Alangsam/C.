@@ -36,14 +36,15 @@
                         <h3>Login</h3>
                     </div>
                     <div>
-                        <form>
+                        <form id="login-form">
                             <label class="pt-3">Email</label>
-                            <input class="form-control"/>
-
+                            <input id="login-email" name="l-email" class="form-control"/>
+                            <p id="login-email-error" class="text-danger"></p>
                             <label class="pt-3">Password</label>
-                            <input class="form-control"/>
+                            <input id="login-password" name="l-password" class="form-control"/>
+                            <p id="login-password-error" class="text-danger"></p>
                         </form>
-                        <button id="sign-in-button" class="btn btn-block btn-dark mt-4" type="submit">Sign in</button>
+                        <button id="sign-in-button" class="btn btn-block btn-dark mt-4" onclick="sendNewNote()">Sign in</button>
                     </div>
                 </div>
             </div>

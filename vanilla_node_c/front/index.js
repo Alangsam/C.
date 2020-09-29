@@ -25,7 +25,7 @@ function sendCreateInfo() {
 
     // This will run either way
     // All three of these are optional, depending on what you're trying to do
-    console.log("This always runs...");
+    //console.log("This always runs...");
   };
   const formData = new FormData(document.getElementById("create-form"));
   xmlHttp.open("POST", "http://127.0.0.1:3000/");
@@ -34,14 +34,22 @@ function sendCreateInfo() {
 }
 
 function sendNewNote() {
-  const postNote = new XMLHttpRequest();
-  postNote.onload = function () {
-    if (postNote.status >= 200 && postNote.status < 300) {
+  const xmlHttp = new XMLHttpRequest();
+  xmlHttp.onload = function () {
+    if (xmlHttp.status >= 200 && xmlHttp.status < 300) {
+      window.location.href =
+        "http://127.0.0.1:5500/vanilla_node_c/front/create_note.html";
       console.log("success!", xmlHttp);
     } else {
-      console.log("The request failed!");
+      const errors = JSON.parse(xmlHttp.statusText);
+      console.log("The request failed!", errors);
+      const loginEmailElem = document.getElementById("login-email-error");
+      loginEmailElem.innerText = errors.emailError;
+      const loginPassElem = document.getElementById("login-password-error");
+      loginPassElem.innerText = errors.passError;
     }
   };
-  postNote.open("POST", "http://127.0.0.1:3000/new-note");
-  postNote.send("hello");
+  const formData = new FormData(document.getElementById("login-form"));
+  xmlHttp.open("POST", "http://127.0.0.1:3000/auth");
+  xmlHttp.send(formData);
 }

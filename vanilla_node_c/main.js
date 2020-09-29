@@ -34,6 +34,12 @@ const {
   createPasswordValidation,
 } = require("./utils/validation/createPasswordValidation");
 const createUserQuery = require("./queries/createUser");
+const {
+  loginEmailValidation,
+} = require("./utils/validation/loginEmailValidation");
+const {
+  loginPassValidation,
+} = require("./utils/validation/loginPassValidation");
 const server = http.createServer((request, response) => {
   if (request.method == "POST") {
     let body = "";
@@ -50,7 +56,7 @@ const server = http.createServer((request, response) => {
       request.on("end", function () {
         const post = qs.parse(body);
         const userObj = regForForm(JSON.stringify(post));
-        console.log(userObj);
+        //console.log(body, userObj);
         const emailValidity = createEmailValidity(String(userObj.email));
         const passWordValidity = createPasswordValidation(
           String(userObj.password)
@@ -86,8 +92,33 @@ const server = http.createServer((request, response) => {
           response.end("Failed");
         }
       });
-    } else if (request.url === "/new-note") {
-      request.on("end", function () {});
+    } else if (request.url === "/auth") {
+      request.on("end", function () {
+        const post = qs.parse(body);
+        const userObj = regForForm(JSON.stringify(post));
+        const emailValidity = loginEmailValidation(String(userObj.email));
+        const passWordValidity = loginPassValidation(String(userObj.password));
+
+        if (emailValidity === "" && passWordValidity === "") {
+          response.setHeader("Content-Type", "application.json");
+          response.setHeader("Access-Control-Allow-Origin", "*");
+          response.statusCode = 200;
+          response.end("Success");
+        } else {
+          response.setHeader("Content-Type", "application.json");
+          response.setHeader("Access-Control-Allow-Origin", "*");
+          response.statusCode = 400;
+          response.statusMessage = JSON.stringify({
+            emailError: emailValidity,
+            passError: passWordValidity,
+          });
+          response.end("Failed");
+        }
+        // response.setHeader("Content-Type", "application.json");
+        // response.setHeader("Access-Control-Allow-Origin", "*");
+        // response.statusCode = 200;
+        // response.end("Success");
+      });
     }
   }
 });
