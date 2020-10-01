@@ -10,16 +10,19 @@
     </head>
     <body>
         <div class="container">
-            <div class="row ">
+            <div class="row">
                 <h1 class="col-12">Record A New Note</h1>
                 <form id="note-form" class="col-8 offset-2 text-center">
                     <label>Title: </label>
-                    <input id="note-title" class="form-control"/>
+                    <p id="title-error-message" class="text-danger">Title cannot be Empty</p>
+                    <input id="note-title" name="title" class="form-control is-invalid" onkeyup="titleLengthValidation()"/>
 
                     <label class="mt-5">New Note: </label>
-                    <textarea class="form-control" style="height: 70vh;"></textarea>
-                    <button class="btn btn-dark float-right mt-3" onclick="sendNewNote()">Save</button>
+                    <p id="note-error-message" class="text-danger">Note Area Blank</p>
+                    <textarea id="note-text-area" name="body" class="form-control is-invalid" style="height: 70vh;" onkeyup="noteLengthValidation()"></textarea>
+                    
                 </form>
+                <button class="btn btn-dark col-4 offset-4 mt-3" onclick="sendNewNote()">Save</button>
             </div>
         </div>
 

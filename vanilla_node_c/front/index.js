@@ -33,7 +33,7 @@ function sendCreateInfo() {
   console.log(xmlHttp.statusText);
 }
 
-function sendNewNote() {
+function userAuth() {
   const xmlHttp = new XMLHttpRequest();
   xmlHttp.onload = function () {
     if (xmlHttp.status >= 200 && xmlHttp.status < 300) {
@@ -51,5 +51,50 @@ function sendNewNote() {
   };
   const formData = new FormData(document.getElementById("login-form"));
   xmlHttp.open("POST", "http://127.0.0.1:3000/auth");
+  xmlHttp.send(formData);
+}
+
+function noteLengthValidation() {
+  const noteArea = document.getElementById("note-text-area");
+  const noteErrMessage = document.getElementById("note-error-message");
+  if (noteArea.value.length === 0) {
+    noteErrMessage.innerText = "Note Area Blank";
+    noteArea.className = "form-control is-invalid";
+  } else if (noteArea.value.length > 1000) {
+    noteErrMessage.innerText = "Note must be less than 1000 Characters";
+    noteArea.className = "form-control is-invalid";
+  } else {
+    noteErrMessage.innerText = "";
+    noteArea.className = "form-control";
+  }
+}
+
+function titleLengthValidation() {
+  const titleArea = document.getElementById("note-title");
+  const titleErrMessage = document.getElementById("title-error-message");
+  if (titleArea.value.length === 0) {
+    titleErrMessage.innerText = "Title cannot be Empty";
+    titleArea.className = "form-control is-invalid";
+  } else if (titleArea.value.length > 100) {
+    titleErrMessage.innerText = "Title must be less than 101 characters";
+    titleArea.className = "form-control is-invalid";
+  } else {
+    titleErrMessage.innerText = "";
+    titleArea.className = "form-control";
+  }
+}
+
+function sendNewNote() {
+  const xmlHttp = new XMLHttpRequest();
+  xmlHttp.onload = function () {
+    if (xmlHttp.status >= 200 && xmlHttp.status < 300) {
+      console.log("success!", xmlHttp);
+    } else {
+    }
+  };
+
+  const formData = new FormData(document.getElementById("note-form"));
+  console.log(formData);
+  xmlHttp.open("POST", "http://127.0.0.1:3000/createNote");
   xmlHttp.send(formData);
 }

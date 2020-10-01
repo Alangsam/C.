@@ -26,7 +26,7 @@ dataBase.connect(function (err) {
 //dataBase.end();
 
 const qs = require("querystring");
-const { regForForm } = require("./utils/regex");
+const { regForForm, regForNoteForm } = require("./utils/regex");
 const {
   createEmailValidity,
 } = require("./utils/validation/createEmailValidity");
@@ -40,6 +40,10 @@ const {
 const {
   loginPassValidation,
 } = require("./utils/validation/loginPassValidation");
+const findUser = require("./queries/findUser");
+const {
+  createNoteValidation,
+} = require("./utils/validation/createNoteValidation");
 const server = http.createServer((request, response) => {
   if (request.method == "POST") {
     let body = "";
@@ -100,10 +104,30 @@ const server = http.createServer((request, response) => {
         const passWordValidity = loginPassValidation(String(userObj.password));
 
         if (emailValidity === "" && passWordValidity === "") {
-          response.setHeader("Content-Type", "application.json");
-          response.setHeader("Access-Control-Allow-Origin", "*");
-          response.statusCode = 200;
-          response.end("Success");
+          dataBase.query(findUser, [userObj.email, userObj.password], function (
+            error,
+            results,
+            fields
+          ) {
+            if (error) {
+              throw error;
+            } else if (results.length > 0) {
+              console.log(results);
+              response.setHeader("Content-Type", "application.json");
+              response.setHeader("Access-Control-Allow-Origin", "*");
+              response.statusCode = 200;
+              response.end("Success");
+            } else {
+              response.setHeader("Content-Type", "application.json");
+              response.setHeader("Access-Control-Allow-Origin", "*");
+              response.statusCode = 400;
+              response.statusMessage = JSON.stringify({
+                emailError: "",
+                passError: "Wrong Email or Password",
+              });
+              response.end("Failed");
+            }
+          });
         } else {
           response.setHeader("Content-Type", "application.json");
           response.setHeader("Access-Control-Allow-Origin", "*");
@@ -118,6 +142,34 @@ const server = http.createServer((request, response) => {
         // response.setHeader("Access-Control-Allow-Origin", "*");
         // response.statusCode = 200;
         // response.end("Success");
+      });
+    } else if (request.url === "/createNote") {
+      //recieve new note
+
+      request.on("end", function () {
+        const post = qs.parse(body);
+        const userObj = regForNoteForm(JSON.stringify(post));
+        const titleNoteValidation = createNoteValidation(
+          userObj.title[0],
+          userObj.body[0]
+        );
+        if (
+          titleNoteValidation.titleVar === 0 ||
+          titleNoteValidation.noteVar === 0
+        ) {
+          //validation === false
+          response.setHeader("Content-Type", "application.json");
+          response.setHeader("Access-Control-Allow-Origin", "*");
+          response.statusCode = 400;
+          response.end("Failed");
+        } else {
+          //validation === true
+          response.setHeader("Content-Type", "application.json");
+          response.setHeader("Access-Control-Allow-Origin", "*");
+          response.statusCode = 200;
+          response.end("Success");
+          //add note to database
+        }
       });
     }
   }

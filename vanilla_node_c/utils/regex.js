@@ -10,4 +10,16 @@ function regForForm(string) {
   return { email, password };
 }
 
-module.exports = { regForForm };
+function regForNoteForm(string) {
+  const noNonChars = /(?<=\\.{1})/gi;
+  const newStringNonChars = string.replace(noNonChars, "");
+  const title = newStringNonChars.match(
+    /(?<=title\\\"\\r\\n\\r\\n).*?(?=\\r\\n)/gi
+  );
+  const body = newStringNonChars.match(
+    /(?<=body\\\"\\r\\n\\r\\n).*?(?=\\r\\n)/gi
+  );
+  return { title, body };
+}
+
+module.exports = { regForForm, regForNoteForm };
