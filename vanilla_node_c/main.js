@@ -44,6 +44,7 @@ const findUser = require("./queries/findUser");
 const {
   createNoteValidation,
 } = require("./utils/validation/createNoteValidation");
+const insertNewNote = require("./queries/insertNewNote");
 const server = http.createServer((request, response) => {
   if (request.method == "POST") {
     let body = "";
@@ -169,6 +170,22 @@ const server = http.createServer((request, response) => {
           response.statusCode = 200;
           response.end("Success");
           //add note to database
+          const noteForDataBase = {
+            id: uuidv4(),
+            title: userObj.title,
+            note: userObj.body,
+            created_at: Date.now(),
+            creator_id: 123456,
+          };
+          dataBase.query(insertNewNote, noteForDataBase, function (
+            error,
+            result,
+            fields
+          ) {
+            if (error) {
+              throw error;
+            }
+          });
         }
       });
     }

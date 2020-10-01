@@ -90,6 +90,7 @@ function sendNewNote() {
     if (xmlHttp.status >= 200 && xmlHttp.status < 300) {
       console.log("success!", xmlHttp);
     } else {
+      console.log("Failure", xmlHttp);
     }
   };
 
